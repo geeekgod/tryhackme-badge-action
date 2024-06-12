@@ -83,7 +83,7 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Fetch TryHackMe Badge
-      uses: geeekgod/tryhackme-badge-action@v1.0.0
+      uses: geeekgod/tryhackme-badge-action@v1.0
       with:
         image_path: './assets/badge.png'
         username: 'your_tryhackme_username'
