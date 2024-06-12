@@ -5,10 +5,13 @@ description: "Fetch your TryHackMe Badge & display it in your README"
 inputs:
   image_path:
     description: "Path to save the badge"
-    default: "./assets/thm_propic.png"
+    default: "./assets/badge.png"
     required: false
   username:
     description: "Your TryHackMe username"
+    required: true
+  user_id:
+    description: "Your TryHackMe user_id"
     required: true
   committer_username:
     description: "Your GitHub username"
@@ -28,4 +31,4 @@ inputs:
 
 runs:
   using: "node20"
-  main: "index.js"
+  main: "dist/index.js"

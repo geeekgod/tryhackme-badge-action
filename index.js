@@ -1,12 +1,12 @@
 const { spawn } = require("child_process");
-const fetch = require("node-fetch");
+const axios = require("axios");
 const core = require("@actions/core");
-const github = require("@actions/github");
 const fs = require("fs");
 
 const GITHUB_TOKEN = core.getInput("GITHUB_TOKEN");
-const FILEPATH = core.getInput("image_path");
-const THM_USERNAME = core.getInput("username");
+const FILEPATH = core.getInput("image_path") || "./assets/badge.png";
+const THM_USERNAME = core.getInput("username") || "geeekgod";
+const THM_USER_ID = core.getInput("user_id") || "1000000";
 
 /*
  * Executes a command and returns its result as promise
@@ -49,7 +49,20 @@ const exec = (cmd, args = [], options = {}) =>
 
 core.setSecret(GITHUB_TOKEN);
 
+const updateBadge = async (userId) => {
+  try {
+    const res = await axios.get(`https://tryhackme.com/badge/regen/${userId}`);
+    if (res.status >= 400) {
+      throw new Error("Badge update failed");
+    }
+  } catch (error) {
+    console.error("Error during badge update:", error);
+    core.setFailed(`Action failed with error ${error.message}`);
+  }
+};
+
 const dlImg = async (githubToken, filePath, username) => {
+  await updateBadge(THM_USER_ID);
   try {
     const url = `https://tryhackme-badges.s3.amazonaws.com/${username}.png`;
     const path = filePath;
@@ -57,13 +70,16 @@ const dlImg = async (githubToken, filePath, username) => {
     const committerEmail = core.getInput("committer_email");
     const commitMessage = core.getInput("commit_message");
 
-    const res = await fetch(url);
-    if (!res.ok) throw new Error(`Failed to fetch image: ${res.statusText}`);
+    const res = await axios({
+      url,
+      method: "GET",
+      responseType: "stream",
+    });
 
     const fileStream = fs.createWriteStream(path);
     await new Promise((resolve, reject) => {
-      res.body.pipe(fileStream);
-      res.body.on("error", reject);
+      res.data.pipe(fileStream);
+      res.data.on("error", reject);
       fileStream.on("finish", resolve);
     });
 
@@ -87,6 +103,4 @@ const dlImg = async (githubToken, filePath, username) => {
   }
 };
 
-dlImg(GITHUB_TOKEN, FILEPATH, THM_USERNAME).catch((error) => {
-  console.log("nothing to commit");
-});
+dlImg(GITHUB_TOKEN, FILEPATH, THM_USERNAME);
