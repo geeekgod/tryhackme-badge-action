@@ -1,0 +1,31 @@
+name: "TryHackMe Badge Action"
+author: "Rishabh Singh - geeekgod"
+description: "Fetch your TryHackMe Badge & display it in your README"
+
+inputs:
+  image_path:
+    description: "Path to save the badge"
+    default: "./assets/thm_propic.png"
+    required: false
+  username:
+    description: "Your TryHackMe username"
+    required: true
+  committer_username:
+    description: "Your GitHub username"
+    default: "geeekgod-thm-bot"
+    required: false
+  committer_email:
+    description: "Your GitHub email"
+    default: "risahbh@geeekgod.in"
+    required: false
+  commit_message:
+    description: "Commit message"
+    default: "Updated THM profile badge"
+    required: false
+  GITHUB_TOKEN:
+    description: "Your GitHub Token"
+    required: true
+
+runs:
+  using: "node20"
+  main: "index.js"
